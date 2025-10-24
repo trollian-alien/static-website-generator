@@ -9,6 +9,11 @@ class TextType(Enum):
 	LINK = "a"
 	IMAGE = "img"
 
+	@property
+	def label(self):
+		# pretty display name
+		return self.name.lower() if self is not TextType.TEXT else "text"
+
 class TextNode:
 	def __init__(self, text, text_type, url = None):
 		self.text = text
@@ -19,7 +24,7 @@ class TextNode:
 		return self.text == other.text and self.text_type == other.text_type and self.url == other.url
 
 	def __repr__(self):
-		return f"TextNode({self.text},{self.text_type.value},{self.url})"
+		return f'TextNode("{self.text}",{self.text_type.label},{self.url})'
 
 def text_node_to_html_node(text_node):
 	if text_node.text_type not in set(TextType):
