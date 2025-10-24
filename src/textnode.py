@@ -1,11 +1,13 @@
 from enum import Enum
+from htmlnode import LeafNode
 
 class TextType(Enum):
-	BOLD =  "bold"
-	ITALIC = "italic"
+	TEXT = None
+	BOLD =  "b"
+	ITALIC = "i"
 	CODE = "code"
-	LINK = "link"
-	IMAGE = "image"
+	LINK = "a"
+	IMAGE = "img"
 
 class TextNode:
 	def __init__(self, text, text_type, url = None):
@@ -18,3 +20,18 @@ class TextNode:
 
 	def __repr__(self):
 		return f"TextNode({self.text},{self.text_type.value},{self.url})"
+
+def text_node_to_html_node(text_node):
+	if text_node.text_type not in set(TextType):
+		raise ValueError(f"Invalid TextType: {text_node.text_type!r}")
+	elif text_node.text_type == TextType.TEXT:
+		return LeafNode(None, text_node.text)
+	elif text_node.text_type == TextType.IMAGE:
+		props = {"src": text_node.url, "alt": text_node.text}
+		return LeafNode("img", "", props)
+	
+	props = None
+	if text_node.text_type == TextType.LINK:
+		props = {"href": text_node.url}
+	tag = text_node.text_type.value
+	return LeafNode(tag, text_node.text, props)
