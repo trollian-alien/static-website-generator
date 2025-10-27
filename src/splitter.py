@@ -2,7 +2,7 @@ from textnode import TextNode, TextType
 import re
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
-    #input: lost of textnodes, a delimiter, and the texttype of each delimiter
+    #input: list of textnodes, a delimiter, and the texttype of each delimiter
     new_nodes = []
     for node in old_nodes:
         node_text_type = node.text_type
@@ -26,12 +26,15 @@ def extract_markdown_links(text):
 def split_nodes_image(old_nodes):
     new_nodes = []
     for node in old_nodes:
+        if node.text_type in [TextType.IMAGE, TextType.LINK]:
+            new_nodes.append(node)
+            continue
         split_text = re.split(r"(!\[[^\[\]]*\]\([^\(\)]*\))", node.text)
         image_data = extract_markdown_images(node.text)
         for i in range(0, len(split_text)):
             if split_text[i] != "":
                 if i%2 == 0:
-                    new_nodes.append(TextNode(split_text[i], TextType.TEXT))
+                    new_nodes.append(TextNode(split_text[i], node.text_type))
                 else:
                     new_nodes.append(TextNode(image_data[(i-1)//2][0], TextType.IMAGE, image_data[(i-1)//2][1]))
     return new_nodes
@@ -39,12 +42,24 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     new_nodes = []
     for node in old_nodes:
+        if node.text_type in [TextType.IMAGE, TextType.LINK]:
+            new_nodes.append(node)
+            continue
         split_text = re.split(r"((?<!!)\[[^\[\]]*\]\([^\(\)]*\))", node.text)
         link_data = extract_markdown_links(node.text)
         for i in range(0, len(split_text)):
             if split_text[i] != "":
                 if i%2 == 0:
-                    new_nodes.append(TextNode(split_text[i], TextType.TEXT))
+                    new_nodes.append(TextNode(split_text[i], node.text_type))
                 else:
                     new_nodes.append(TextNode(link_data[(i-1)//2][0], TextType.LINK, link_data[(i-1)//2][1]))
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
