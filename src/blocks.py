@@ -12,8 +12,14 @@ def markdown_to_blocks(markdown):
     blocks = markdown.split("\n\n")
     return [block.strip() for block in blocks if block != ""]
 
+def is_heading(block):
+    i = 0
+    while i < len(block) and block[i] == '#':
+        i += 1
+    return 1 <= i <= 6 and i < len(block) and block[i] == ' '
+
 def block_to_block_type(block):
-    if block[0] == "#"and block[6] != "#":
+    if is_heading(block):
         return BlockType.HEADING
     elif block.startswith("```") and block.endswith("```"):
         return BlockType.CODE
