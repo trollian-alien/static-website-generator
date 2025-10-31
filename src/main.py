@@ -44,6 +44,7 @@ def generate_page(from_path, template_path, dest_path, basepath):
         .replace('href="/', f'href="{basepath}')
         .replace('src="/', f'src="{basepath}')
     )
+    print(html)
     with open(dest_path, 'w') as f:
         f.write(html)
         f.close()
@@ -58,7 +59,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
             generate_page(item_path, template_path, dest_path + f"/{item[:-3]}.html", basepath)
         elif os.path.isdir(item_path):
             newdir = dest_path + f"/{item}"
-            os.mkdir(newdir, exist_ok=True)
+            os.makedirs(newdir, exist_ok=True)
             generate_pages_recursive(item_path, template_path, newdir, basepath)
 
 
