@@ -58,7 +58,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, bas
             generate_page(item_path, template_path, dest_path + f"/{item[:-3]}.html", basepath)
         elif os.path.isdir(item_path):
             newdir = dest_path + f"/{item}"
-            os.mkdir(newdir, exits_ok=True)
+            os.mkdir(newdir, exist_ok=True)
             generate_pages_recursive(item_path, template_path, newdir, basepath)
 
 
