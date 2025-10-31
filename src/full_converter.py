@@ -43,3 +43,7 @@ def markdown_to_html_node(markdown):
             children = [ParentNode(tags[1], grandchildren[i]) for i in range(0,len(grandchildren))]
         parents.append(ParentNode(tags[0], children))
     return ParentNode("div", parents)
+
+def extract_title(markdown):
+    search = re.search(r"(?<=[^#]# )[^#+].+(?=\n)", " " + markdown) 
+    return search.group(0).strip() if search else None

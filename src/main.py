@@ -1,3 +1,4 @@
+from full_converter import extract_title, markdown_to_html_node
 import os, shutil
 
 def wipe_directory_content(path):
@@ -23,8 +24,24 @@ def copy(source, target): #copies from source directory path to target path
                 changelog += f"\n file {entry.name} copied to {target}"
     print(changelog)
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path, 'r') as file:
+        markdown = file.read()
+        file.close()
+    with open(template_path, 'r') as file:
+        template = file.read()
+        file.close()
+    content = markdown_to_html_node(markdown).to_html()
+    title = extract_title(markdown)
+    html = template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+    with open(dest_path, 'w') as f:
+        f.write(html)
+        f.close()
+
 def main():
     copy(os.path.abspath("static"), os.path.abspath("public"))
+    generate_page(os.path.abspath("content/index.md"), os.path.abspath("template.html"), os.path.abspath("public/index.html"))
 
 if __name__ == "__main__":
     main()
